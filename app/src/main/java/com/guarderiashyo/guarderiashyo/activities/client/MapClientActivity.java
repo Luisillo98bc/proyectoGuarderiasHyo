@@ -305,7 +305,8 @@ public class MapClientActivity extends AppCompatActivity implements OnMapReadyCa
                 }
 
                 LatLng guarderiaLatLng = new LatLng(location.latitude, location.longitude);
-                Marker marker = mMap.addMarker(new MarkerOptions().position(guarderiaLatLng).title("Guarderia disponible").icon(BitmapDescriptorFactory.fromResource(R.drawable.madre)));
+                Marker marker = mMap.addMarker(new MarkerOptions().position(guarderiaLatLng).title("Guarderia disponible (Estimulacion temprana, desarrollo de confianza)").icon(BitmapDescriptorFactory.fromResource(R.drawable.madre)));
+                //Toast.makeText(MapClientActivity.this, "servicios", Toast.LENGTH_SHORT).show();
                 marker.setTag(key);
                 mGuarderiaMarcadores.add(marker);
             }

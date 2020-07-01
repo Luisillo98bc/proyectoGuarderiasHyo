@@ -134,7 +134,7 @@ public class MapClientBookingActivity extends AppCompatActivity implements OnMap
 
                     }
                     if(status.equals("start")){
-                        mtxtViewStatusBooking.setText("Estado: A espera");
+                        mtxtViewStatusBooking.setText("Estado: A espera de su llegada");
                         startBooking();
                     } else if(status.equals("finish")) {
                         mtxtViewStatusBooking.setText("Estado: Finalizado");
@@ -212,10 +212,10 @@ public class MapClientBookingActivity extends AppCompatActivity implements OnMap
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
                     String name = dataSnapshot.child("name").getValue().toString();
-                    String email = dataSnapshot.child("email").getValue().toString();
+                    String email = dataSnapshot.child("servicios").getValue().toString();
                     //String servicio = dataSnapshot.child("servicio").getValue().toString();
-                    txtViewClientBooking.setText(name);
-                    txtViewClientEmailBooking.setText(email);
+                    txtViewClientBooking.setText("nombre: "+name);
+                    txtViewClientEmailBooking.setText("servicios: "+email);
 
                 }
             }
