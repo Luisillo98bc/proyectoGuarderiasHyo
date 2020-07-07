@@ -1,5 +1,7 @@
 package com.guarderiashyo.guarderiashyo.services;
 
+import android.app.NotificationManager;
+import android.content.Context;
 import android.os.Build;
 
 import android.app.Notification;
@@ -46,6 +48,11 @@ public class MyFirebaseMessagingClient extends FirebaseMessagingService {
                     String idClient = data.get("idClient");
                     showNotificationApiOreoActions(title, body, idClient);
                 }
+                else if (title.contains("Visita Cancelado")){
+                    NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                    manager.cancel(2);
+                    showNotificationApiOreo(title, body);
+                }
                 else {
                     showNotificationApiOreo(title, body);
                 }
@@ -54,6 +61,11 @@ public class MyFirebaseMessagingClient extends FirebaseMessagingService {
                 if (title.contains("SOLICITUD DE SERVICIO")) {
                     String idClient = data.get("idClient");
                     showNotificationActions(title, body, idClient);
+                }
+                else if (title.contains("Visita Cancelado")){
+                    NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                    manager.cancel(2);
+                    showNotification(title, body);
                 }
                 else {
                     showNotification(title, body);

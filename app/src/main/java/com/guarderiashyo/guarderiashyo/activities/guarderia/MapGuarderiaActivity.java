@@ -47,6 +47,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.guarderiashyo.guarderiashyo.R;
 import com.guarderiashyo.guarderiashyo.activities.InicioActivity;
 import com.guarderiashyo.guarderiashyo.activities.client.MapClientActivity;
+import com.guarderiashyo.guarderiashyo.activities.client.UpdateProfileActivity;
 import com.guarderiashyo.guarderiashyo.includes.MyToolbar;
 import com.guarderiashyo.guarderiashyo.providers.AuthProvider;
 import com.guarderiashyo.guarderiashyo.providers.GeofireProvider;
@@ -181,6 +182,12 @@ public class MapGuarderiaActivity extends AppCompatActivity implements OnMapRead
         if(item.getItemId() == R.id.action_logout){
             logout();
         }
+
+        if (item.getItemId() == R.id.action_update) {
+            Intent intent = new Intent(MapGuarderiaActivity.this, UpdateProfileGuarderActivity.class);
+            startActivity(intent);
+        }
+
         return super.onOptionsItemSelected(item);
     }
 

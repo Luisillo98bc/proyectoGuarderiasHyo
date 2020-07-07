@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -102,7 +103,28 @@ public class RequestGuarderiaActivity extends AppCompatActivity {
         mClientBookingProvider = new ClientBookingProvider();
         mAuthProvider = new AuthProvider();
         mGoogleApiProvider = new GoogleApiProvider(RequestGuarderiaActivity.this);
+
+        mBtnCancelRequest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cancelRequest();
+            }
+        });
+
         getClosesGuarderias();
+    }
+
+
+
+
+
+    private void cancelRequest() {
+        mClientBookingProvider.delete(mAuthProvider.getId()).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                sendNotificationCancel();
+            }
+        });
     }
 
     private void getClosesGuarderias(){
@@ -188,6 +210,56 @@ public class RequestGuarderiaActivity extends AppCompatActivity {
             }
         });
 
+    }
+    private void sendNotificationCancel(){
+        mtokenProvider.getToken(mIdGuarderiaFound).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {//contiene la inf del nodo del token
+                if(dataSnapshot.exists()){
+                    String token = dataSnapshot.child("token").getValue().toString();
+                    Map<String, String> map = new HashMap<>();
+                    map.put("title","Visita Cancelado");
+                    map.put("body","El cliente Cancelo la solicitud");
+
+                    FCMBody fcmBody = new FCMBody(token, "high", "4500s",map);
+                    mNotificationProvider.sendNotification(fcmBody).enqueue(new Callback<FCMResponse>() {
+                        @Override
+                        public void onResponse(Call<FCMResponse> call, Response<FCMResponse> response) {
+                            if(response.body() != null){
+                                if(response.body().getSuccess() == 1){
+
+                                    Toast.makeText(RequestGuarderiaActivity.this, "la solicitud se cancelo correctamente", Toast.LENGTH_SHORT).show();
+
+                                    Intent intent = new Intent(RequestGuarderiaActivity.this, MapClientActivity.class);
+                                    startActivity(intent);
+                                    finish();
+
+                                }else{
+                                    Toast.makeText(RequestGuarderiaActivity.this, "No se envio la notificacion", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                            else{
+
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<FCMResponse> call, Throwable t) {
+                            Log.d("Error", "Error" + t.getMessage());
+
+                        }
+                    });
+                }else{
+                    Toast.makeText(RequestGuarderiaActivity.this, "No se pudo enviar la notificacion porque la guarderia no tiene un token de sesión", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private void sendNotification(final String time, final String km) {

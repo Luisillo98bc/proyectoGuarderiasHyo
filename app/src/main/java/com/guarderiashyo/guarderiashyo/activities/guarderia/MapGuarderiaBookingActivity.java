@@ -4,12 +4,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.graphics.Color;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -28,6 +30,7 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -67,6 +70,7 @@ import com.guarderiashyo.guarderiashyo.providers.GeofireProvider;
 import com.guarderiashyo.guarderiashyo.providers.GoogleApiProvider;
 import com.guarderiashyo.guarderiashyo.providers.NotificationProvider;
 import com.guarderiashyo.guarderiashyo.providers.TokenProviders;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -97,7 +101,10 @@ public class MapGuarderiaBookingActivity extends AppCompatActivity implements On
     private LatLng mCurrentLatLng;
 
     TextView txtViewClientBooking, txtViewClientEmail, txtViewOriginBooking, txtViewDestinationBooking;
+    private ImageView mImageViewBooking;
     String mExtraClientId;
+
+
 
     private LatLng mOriginLatLng;
     private LatLng mDestinoLatLng;
@@ -116,7 +123,7 @@ public class MapGuarderiaBookingActivity extends AppCompatActivity implements On
     LocationCallback mLocationCallback = new LocationCallback() {
         @Override
         public void onLocationResult(LocationResult locationResult) {
-            for(Location location: locationResult.getLocations()) {
+            for (Location location : locationResult.getLocations()) {
                 if (getApplicationContext() != null) {
 
                     mCurrentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
@@ -141,7 +148,7 @@ public class MapGuarderiaBookingActivity extends AppCompatActivity implements On
 
                     updateLocation();
 
-                    if(mIsFirstTime){//solo se ejecutara una vez
+                    if (mIsFirstTime) {//solo se ejecutara una vez
                         mIsFirstTime = false;
                         getClientBooking();
                     }
@@ -178,6 +185,8 @@ public class MapGuarderiaBookingActivity extends AppCompatActivity implements On
         mButtonStartBooking = findViewById(R.id.btnStartBooking);
         mButtonFinishBooking = findViewById(R.id.btnFinishBooking);
 
+        mImageViewBooking = findViewById(R.id.imageViewClientBooking);
+
         mExtraClientId = getIntent().getStringExtra("idClient");
         mGoogleApiProvider = new GoogleApiProvider(MapGuarderiaBookingActivity.this);
 
@@ -188,9 +197,9 @@ public class MapGuarderiaBookingActivity extends AppCompatActivity implements On
         mButtonStartBooking.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(mIsCloseToClient){
+                if (mIsCloseToClient) {
                     startBooking();
-                } else{
+                } else {
                     startBooking();
                     //Toast.makeText(MapGuarderiaBookingActivity.this, "Debe estar dcerca a la posición", Toast.LENGTH_SHORT).show();
                 }
@@ -210,7 +219,7 @@ public class MapGuarderiaBookingActivity extends AppCompatActivity implements On
         mClientBookingProvider.updateStatus(mExtraClientId, "finish");
         mClientBookingProvider.updateIdHistoryBooking(mExtraClientId);
         sendNotification("Ida finalizada");
-        if(mFusedLocation != null){
+        if (mFusedLocation != null) {
             mFusedLocation.removeLocationUpdates(mLocationCallback);
         }
         mGeofireProvider.removeLocation(mAuthProvider.getId());
@@ -220,6 +229,7 @@ public class MapGuarderiaBookingActivity extends AppCompatActivity implements On
         startActivity(i);
         finish();
     }
+
     private void startBooking() {
         mClientBookingProvider.updateStatus(mExtraClientId, "start");
         mButtonStartBooking.setVisibility(View.GONE);
@@ -233,7 +243,7 @@ public class MapGuarderiaBookingActivity extends AppCompatActivity implements On
 
     }
 
-    private double getDistanceBetween(LatLng clientLatLng, LatLng guarderLatLng){
+    private double getDistanceBetween(LatLng clientLatLng, LatLng guarderLatLng) {
         double distance = 0;
         Location clientLocation = new Location("");
         Location guarderLocation = new Location("");
@@ -245,11 +255,11 @@ public class MapGuarderiaBookingActivity extends AppCompatActivity implements On
         return distance;
     }
 
-    void getClientBooking(){
+    void getClientBooking() {
         mClientBookingProvider.getClientBooking(mExtraClientId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()){
+                if (dataSnapshot.exists()) {
                     String destino = dataSnapshot.child("destination").getValue().toString();
                     String origin = dataSnapshot.child("origin").getValue().toString();
                     double destinoLat = Double.parseDouble(dataSnapshot.child("destinationLat").getValue().toString());
@@ -262,8 +272,8 @@ public class MapGuarderiaBookingActivity extends AppCompatActivity implements On
                     mMap.addMarker(new MarkerOptions().position(mOriginLatLng).title("Cliente").icon(BitmapDescriptorFactory.fromResource(R.drawable.bandera_roja)));
 
 
-                    txtViewOriginBooking.setText("Ubicación: "+origin);
-                    txtViewDestinationBooking.setText("Destino: "+destino);
+                    txtViewOriginBooking.setText("Ubicación: " + origin);
+                    txtViewDestinationBooking.setText("Destino: " + destino);
                     drawRoute(mOriginLatLng);
                 }
             }
@@ -275,7 +285,7 @@ public class MapGuarderiaBookingActivity extends AppCompatActivity implements On
         });
     }
 
-    private void drawRoute(LatLng latLng){
+    private void drawRoute(LatLng latLng) {
         mGoogleApiProvider.getDirections(mCurrentLatLng, latLng).enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
@@ -302,8 +312,8 @@ public class MapGuarderiaBookingActivity extends AppCompatActivity implements On
                     String duracionText = duration.getString("text");
 
 
-                } catch (Exception e){
-                    Log.d("Error", "Error encontrado"+e.getMessage());
+                } catch (Exception e) {
+                    Log.d("Error", "Error encontrado" + e.getMessage());
                 }
             }
 
@@ -313,13 +323,22 @@ public class MapGuarderiaBookingActivity extends AppCompatActivity implements On
             }
         });
     }
-    void getClient(){
+
+    private void getClient() {
         mClientProvider.getClient(mExtraClientId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()){
+                if (dataSnapshot.exists()) {
                     String email = dataSnapshot.child("email").getValue().toString();
                     String name = dataSnapshot.child("name").getValue().toString();
+                    String image = "";
+
+                    if (dataSnapshot.hasChild("image")) {
+                        image = dataSnapshot.child("image").getValue().toString();
+                        Picasso.with(MapGuarderiaBookingActivity.this).load(image).into(mImageViewBooking);
+
+                    }
+
                     txtViewClientBooking.setText(name);
                     txtViewClientEmail.setText(email);
                 }
@@ -335,10 +354,10 @@ public class MapGuarderiaBookingActivity extends AppCompatActivity implements On
     private void updateLocation() {
         if (mAuthProvider.existSession() && mCurrentLatLng != null) {
             mGeofireProvider.saveLocation(mAuthProvider.getId(), mCurrentLatLng);
-            if(!mIsCloseToClient){
-                if(mOriginLatLng != null && mCurrentLatLng != null){
+            if (!mIsCloseToClient) {
+                if (mOriginLatLng != null && mCurrentLatLng != null) {
                     double distance = getDistanceBetween(mOriginLatLng, mCurrentLatLng); //metros
-                    if(distance <= 1000000000){//distancia q debe estar cerca
+                    if (distance <= 1000000000) {//distancia q debe estar cerca
                         //mButtonStartBooking.setEnabled(true);
                         mIsCloseToClient = true;
                         Toast.makeText(this, "Esta cerca a la posición del cliente", Toast.LENGTH_SHORT).show();
@@ -356,6 +375,16 @@ public class MapGuarderiaBookingActivity extends AppCompatActivity implements On
         mMap = googleMap;
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         mMap.getUiSettings().setZoomControlsEnabled(true);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
         mMap.setMyLocationEnabled(false);
 
         mLocationRequest = new LocationRequest();

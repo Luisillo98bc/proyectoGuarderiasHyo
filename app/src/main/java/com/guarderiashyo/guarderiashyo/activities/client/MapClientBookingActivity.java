@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -44,6 +45,7 @@ import com.guarderiashyo.guarderiashyo.providers.GeofireProvider;
 import com.guarderiashyo.guarderiashyo.providers.GoogleApiProvider;
 import com.guarderiashyo.guarderiashyo.providers.GuarderiaProvider;
 import com.guarderiashyo.guarderiashyo.providers.TokenProviders;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -77,7 +79,9 @@ public class MapClientBookingActivity extends AppCompatActivity implements OnMap
     private LatLng mGuarderLatLng;
 
     TextView txtViewClientBooking, txtViewClientEmailBooking, txtViewOriginClientBooking, txtViewDestinationClientBooking;
+    private ImageView mImageViewBooking;
     TextView mtxtViewStatusBooking;
+
     private GoogleApiProvider mGoogleApiProvider;
 
     private List<LatLng> mPolylineList;
@@ -117,6 +121,8 @@ public class MapClientBookingActivity extends AppCompatActivity implements OnMap
         txtViewOriginClientBooking = findViewById(R.id.txtViewOriginGuarderBooking);
         txtViewDestinationClientBooking = findViewById(R.id.textViewDestinationGuarderBooking);
         mtxtViewStatusBooking = findViewById(R.id.textViewStatusBooking);
+
+        mImageViewBooking = findViewById(R.id.imageViewClientBooking);
 
         getStatus();
 
@@ -213,6 +219,13 @@ public class MapClientBookingActivity extends AppCompatActivity implements OnMap
                 if(dataSnapshot.exists()){
                     String name = dataSnapshot.child("name").getValue().toString();
                     String email = dataSnapshot.child("servicios").getValue().toString();
+                    String image = "";
+                    if (dataSnapshot.hasChild("image")) {
+                        image = dataSnapshot.child("image").getValue().toString();
+                        Picasso.with(MapClientBookingActivity.this).load(image).into(mImageViewBooking);
+
+                    }
+
                     //String servicio = dataSnapshot.child("servicio").getValue().toString();
                     txtViewClientBooking.setText("nombre: "+name);
                     txtViewClientEmailBooking.setText("servicios: "+email);

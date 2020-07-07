@@ -3,6 +3,7 @@ package com.guarderiashyo.guarderiashyo.providers;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.guarderiashyo.guarderiashyo.models.Client;
 import com.guarderiashyo.guarderiashyo.models.Guarderia;
 
 import java.util.HashMap;
@@ -29,5 +30,13 @@ public class GuarderiaProvider {
     }
     public DatabaseReference getGuarderia(String idGuarder) {
         return mDatabase.child(idGuarder);
+    }
+
+    public Task<Void> update(Guarderia guarderia){
+        Map<String, Object> map = new HashMap<>();
+        map.put("name", guarderia.getName());
+        map.put("image", guarderia.getImage());
+        map.put("servicios", guarderia.getName());
+        return  mDatabase.child(guarderia.getId()).updateChildren(map);
     }
 }

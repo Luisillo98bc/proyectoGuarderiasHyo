@@ -7,6 +7,10 @@ public class Guarderia {
     String ruc;
     String trabajadores;
     String servicios;
+    String image;
+
+    public Guarderia() {
+    }
 
     public Guarderia(String id, String name, String email, String ruc, String trabajadores, String servicios) {
         this.id = id;
@@ -15,6 +19,14 @@ public class Guarderia {
         this.ruc = ruc;
         this.trabajadores = trabajadores;
         this.servicios = servicios;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public String getServicios() {
